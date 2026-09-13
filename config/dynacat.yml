@@ -1,0 +1,568 @@
+server:
+  host: 0.0.0.0
+  port: 8080
+
+theme:
+  background-color: 225 14 12
+  primary-color: 45 90 70
+  negative-color: 0 70 60
+  contrast-multiplier: 1.1
+  presets:
+    green-dark:
+      background-color: 225 14 12
+      primary-color: 92 90 70
+      positive-color: 92 90 70
+      negative-color: 0 70 60
+      contrast-multiplier: 1.1
+    blue-dark:
+      background-color: 240 8 9
+      primary-color: 218 90 70
+      positive-color: 218 90 70
+      negative-color: 0 70 60
+      contrast-multiplier: 1.1
+    red-light:
+      light: true
+      background-color: 240 13 95
+      primary-color: 0 100 30
+      positive-color: 0 100 30
+      negative-color: 0 75 42
+      contrast-multiplier: 1.0
+
+branding:
+  favicon-url: /assets/favicon.svg
+  app-icon-url: /assets/app-icon.svg
+
+pages:
+  - name: Home
+    head-widgets:
+      - type: html
+        frameless: true
+        source: |
+          <style>
+          .pbar{display:flex;justify-content:flex-end;}
+          #ptog{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+          .plab{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+                border:1px solid var(--color-widget-content-border);border-radius:var(--border-radius);
+                padding:5px 11px;color:var(--color-text-subdue);font-size:var(--font-size-h6);
+                text-transform:uppercase;letter-spacing:.5px;user-select:none;}
+          .plab:hover{color:var(--color-text-highlight);}
+          .pdot{width:7px;height:7px;border-radius:50%;background:var(--color-text-subdue);flex-shrink:0;}
+          .plab::after{content:"Share mode off";}
+          #ptog:focus-visible + .plab{outline:2px solid var(--color-primary);outline-offset:2px;}
+          html:has(#ptog:checked) .plab{color:var(--color-primary);border-color:var(--color-primary);}
+          html:has(#ptog:checked) .pdot{background:var(--color-primary);}
+          html:has(#ptog:checked) .plab::after{content:"Share mode on";}
+          .pfake{display:none;}
+          html:has(#ptog:checked) .preal{display:none;}
+          html:has(#ptog:checked) .pfake{display:inline;}
+          .logo-svg [fill="#AF49EA"]{fill:var(--color-primary);}
+          .monitor-site a:hover{color:var(--color-primary);}
+          .monitor-site:hover .monitor-site-icon.flat-icon{opacity:1;}
+          html:has(#ptog:checked) .pblur{filter:blur(14px);}
+          html:has(#ptog:checked) .widget-type-weather .size-h5 .text-truncate{font-size:0;}
+          html:has(#ptog:checked) .widget-type-weather .size-h5 .text-truncate::after{
+            content:"xxxxxx xxxxx, xxxxxx xxxxxx";font-size:var(--font-size-h5);}
+          /* shared by Host, Resources, Top Consumers and Docker -
+             page-level so a failing widget cannot strip the others */
+          .srow{display:grid;gap:10px;align-items:stretch;}
+          .stile{border:1px solid var(--color-widget-content-border);border-radius:var(--border-radius);padding:12px 14px;display:flex;flex-direction:column;gap:3px;background:var(--color-widget-background);}
+          .slabel{font-size:var(--font-size-h6);color:var(--color-text-subdue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+          .slabel a{color:inherit;text-decoration:none;}
+          .slabel a:hover{color:var(--color-primary);}
+          .sval{font-size:20px;color:var(--color-primary);line-height:1.15;}
+          .ssub{font-size:var(--font-size-base);color:var(--color-text-paragraph);}
+          .srow2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));}
+          .srow5{grid-template-columns:repeat(6,minmax(0,1fr));}
+          .srow5 .swide{grid-column:span 2;}
+          @media (max-width:1000px){.srow5{grid-template-columns:repeat(2,minmax(0,1fr));}}
+          .srow5 .ssub{font-size:var(--font-size-h6);}
+          .sgfoot{margin-top:auto;}   /* pins graph+subtext to the tile bottom so all graphs align */
+          .spark{width:100%;height:34px;display:block;}
+          .sbarwrap{height:34px;display:flex;align-items:flex-end;}
+          .sparkf{fill:var(--color-primary);opacity:.16;}
+          .sparkl{fill:none;stroke:var(--color-primary);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round;}
+          .sparkf2{fill:color-mix(in srgb,var(--color-primary) 55%,#000);opacity:.22;}
+          .sparkl2{fill:none;stroke:color-mix(in srgb,var(--color-primary) 55%,#000);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round;}
+          .sparkna{font-size:var(--font-size-h6);color:var(--color-text-subdue);margin-top:10px;}
+          .sparkk{display:flex;gap:10px;font-size:var(--font-size-h6);color:var(--color-text-subdue);margin-top:3px;}
+          .sparkk i{font-style:normal;}
+          .sparkk b{color:var(--color-primary);font-weight:normal;}
+          .sparkk .rx{color:var(--color-primary);}
+          .sparkk .tx{color:color-mix(in srgb,var(--color-primary) 55%,#000);}
+          .sbar{height:9px;width:100%;border-radius:5px;background:var(--color-widget-content-border);overflow:hidden;}
+          .sbarf{height:100%;border-radius:5px;background:var(--color-primary);}
+          .srow3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
+          .tcrow{font-size:var(--font-size-h3);color:var(--color-text-highlight);align-items:baseline;padding:1px 0;}
+          .tcrow > span:last-child{font-size:var(--font-size-base);}
+          .drow{columns:270px 3;column-gap:10px;}
+          .drow .stile{break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:10px;}
+          .dhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px;}
+          .dcount{font-size:var(--font-size-base);color:var(--color-primary);white-space:nowrap;}
+          .dcount.bad{color:var(--color-negative);}
+          .dc{padding:4px 0;border-top:1px solid var(--color-widget-content-border);}
+          .dc:first-of-type{border-top:0;}
+          .dc1{display:flex;align-items:center;gap:7px;}
+          .ddot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--color-positive);}
+          .ddot.bad{background:var(--color-negative);}
+          .ddot.warn{background:var(--color-text-subdue);}
+          .dcn{color:var(--color-text-highlight);font-size:var(--font-size-h3);}
+          .dupd{flex-shrink:0;font-size:var(--font-size-h6);text-transform:uppercase;letter-spacing:.5px;
+                padding:0 5px;border-radius:3px;color:var(--color-background);background:var(--color-primary);font-weight:600;}
+          .dup{margin-left:auto;font-size:var(--font-size-base);color:var(--color-text-paragraph);white-space:nowrap;}
+          .dc2{display:flex;gap:8px;font-size:var(--font-size-base);color:var(--color-text-subdue);padding-left:16px;}
+          .dimg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+          .dport{margin-left:auto;color:var(--color-primary);white-space:nowrap;}
+          </style>
+          <div class="pbar">
+            <input type="checkbox" id="ptog">
+            <label class="plab" for="ptog"><span class="pdot"></span></label>
+          </div>
+
+    columns:
+
+      - size: small
+        widgets:
+          - type: bookmarks
+            groups:
+              - title: Admin
+                # Flow-style YAML list in one env var, add as many as you like.
+                # Quote both fields; a comma or brace inside an unquoted value
+                # breaks the list.
+                links: ${BOOKMARK_LINKS}
+
+          - type: custom-api
+            title: Releases
+            cache: 6h
+            url: http://socket-proxy:2375/v1.24/containers/json?all=true
+            subrequests:
+              wud:
+                url: http://wud:3000/api/containers
+            template: |
+              {{/* Four parallel lists - one entry per service, same order in each.
+                   $svc  = container name, $repo = GitHub owner/repo,
+                   $name = label, $mode = "release" (tags) or "commit" (main). */}}
+              {{ $svc := list "dynacat" "jellyfin" "example-app" }}
+              {{ $repo := list "Panonim/dynacat" "jellyfin/jellyfin" "owner/repo" }}
+              {{ $name := list "dynacat" "Jellyfin" "Example App" }}
+              {{ $mode := list "release" "release" "commit" }}
+              {{ $root := . }}
+              {{ $cs := .JSON.Array "" }}
+              {{ $wud := ($root.Subrequest "wud").JSON.Array "" }}
+              <style>
+              .ur{padding:7px 0;border-top:1px solid var(--color-widget-content-border);}
+              .ur:first-of-type{border-top:0;padding-top:0;}
+              .ur1{display:flex;align-items:baseline;gap:7px;}
+              .urn{color:var(--color-primary);font-size:var(--font-size-h3);min-width:0;}
+              .urn a{color:inherit;text-decoration:none;}
+              .urn a:hover{text-decoration:underline;}
+              .urb-a{color:var(--color-text-subdue);border:1px solid var(--color-widget-content-border);}
+              .urb{margin-left:auto;flex-shrink:0;font-size:var(--font-size-h6);text-transform:uppercase;
+                   letter-spacing:.5px;padding:1px 6px;border-radius:3px;}
+              .urb-u{color:var(--color-background);background:var(--color-primary);font-weight:600;}
+              .urb-f{color:var(--color-text-subdue);border:1px solid var(--color-widget-content-border);}
+              .ur2{display:flex;gap:8px;font-size:var(--font-size-base);color:var(--color-text-subdue);margin-top:1px;}
+              .urv{color:var(--color-primary);}
+              .urt{margin-left:auto;white-space:nowrap;}
+              </style>
+              {{ range $pass := list "u" "n" }}
+              {{ range $i, $sn := $svc }}
+                {{ $run := "" }}
+                {{ range $c := $cs }}{{ if eq (trimPrefix "/" ($c.String "Names.0")) $sn }}{{ $run = replaceMatches "^.*:" "" ($c.String "Image") }}{{ end }}{{ end }}
+                {{ $cm := eq (index $mode $i) "commit" }}
+                {{ $url := printf "https://api.github.com/repos/%s/releases/latest" (index $repo $i) }}
+                {{ if $cm }}{{ $url = printf "https://api.github.com/repos/%s/commits/main" (index $repo $i) }}{{ end }}
+                {{ $gh := getResponse (withHeader "Authorization" "Bearer ${GITHUB_TOKEN}" (newRequest $url)) }}
+                {{ $lat := "" }}{{ $pub := "" }}{{ $rv := "" }}{{ $lv := "" }}
+                {{ if $cm }}
+                  {{ $lat = findMatch `[0-9a-f]{7}` ($gh.JSON.String "sha") }}
+                  {{ $pub = $gh.JSON.String "commit.committer.date" }}
+                  {{ $rv = findMatch `[0-9a-f]{7}` $run }}
+                  {{ $lv = $lat }}
+                {{ else }}
+                  {{ $lat = $gh.JSON.String "tag_name" }}
+                  {{ $pub = $gh.JSON.String "published_at" }}
+                  {{ $rv = findMatch `[0-9]+(\.[0-9]+)*` $run }}
+                  {{ $lv = findMatch `[0-9]+(\.[0-9]+)*` $lat }}
+                {{ end }}
+                {{ $float := eq $rv "" }}
+                {{ $dig := false }}{{ $pull := false }}{{ $newtag := "" }}
+                {{ range $w := $wud }}{{ if and (eq ($w.String "name") $sn) ($w.Bool "updateAvailable") }}{{ $pull = true }}{{ $newtag = $w.String "result.tag" }}{{ if eq ($w.String "updateKind.kind") "digest" }}{{ $dig = true }}{{ end }}{{ end }}{{ end }}
+                {{ $ahead := and (not $float) (not $pull) (ne $lv "") (ne $rv $lv) }}
+                {{ $upd := $pull }}
+                {{ if or (and (eq $pass "u") $upd) (and (eq $pass "n") (not $upd)) }}
+                <div class="ur">
+                  <div class="ur1">
+                    <span class="urn text-truncate"><a href="https://github.com/{{ index $repo $i }}" target="_blank" rel="noreferrer">{{ index $repo $i }}</a></span>
+                    {{ if $upd }}<span class="urb urb-u">update</span>
+                    {{ else if $ahead }}<span class="urb urb-a">upstream ahead</span>
+                    {{ else if $float }}<span class="urb urb-f">floating</span>{{ end }}
+                  </div>
+                  <div class="ur2">
+                    <span class="text-truncate">{{ if $dig }}{{ $run }} <span class="urv">digest changed</span>{{ else if $upd }}{{ $run }} &rarr; <span class="urv">{{ $newtag }}</span>{{ else if and $ahead $cm }}{{ $run }} &middot; main at <span class="urv">{{ $lat }}</span>, no image yet{{ else if $ahead }}{{ $run }} &middot; released <span class="urv">{{ $lat }}</span>, no image yet{{ else if $float }}{{ $run }} &middot; {{ $lat }}{{ else }}{{ $run }}{{ end }}</span>
+                    {{ if $pub }}<span class="urt" {{ parseRelativeTime "rfc3339" $pub }}></span>{{ end }}
+                  </div>
+                </div>
+                {{ end }}
+              {{ end }}
+              {{ end }}
+              {{ range $w := $wud }}
+                {{ if and ($w.Bool "updateAvailable") (ne ($w.String "name") "buildx_buildkit_default") }}
+                  {{ $known := false }}
+                  {{ range $sn := $svc }}{{ if eq $sn ($w.String "name") }}{{ $known = true }}{{ end }}{{ end }}
+                  {{ if not $known }}
+                <div class="ur">
+                  <div class="ur1">
+                    <span class="urn text-truncate">{{ $w.String "name" }}</span>
+                    <span class="urb urb-u">update</span>
+                  </div>
+                  <div class="ur2">
+                    <span class="text-truncate">{{ $w.String "image.tag.value" }} <span class="urv">{{ if eq ($w.String "updateKind.kind") "digest" }}digest changed{{ else }}&rarr; {{ $w.String "result.tag" }}{{ end }}</span></span>
+                  </div>
+                </div>
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+
+      - size: full
+        widgets:
+          - type: custom-api
+            title: Host
+            frameless: true
+            cache: 5m
+            url: http://${GLANCES_HOST}/api/4/system
+            subrequests:
+              uptime:
+                url: http://${GLANCES_HOST}/api/4/uptime
+              dns:
+                url: http://${GLANCES_HOST}/api/4/ports
+              ip:
+                url: http://${GLANCES_HOST}/api/4/ip
+            template: |
+              <div class="srow srow2">
+                <div class="stile">
+                  <div class="slabel">System</div>
+                  <div class="ssub" style="font-size:var(--font-size-h3);color:var(--color-text-highlight);">{{ $h := .JSON.String "hostname" }}<span class="preal">{{ $h }}</span><span class="pfake">{{ replaceMatches "[0-9]" "0" (replaceMatches "[A-Za-z]" "x" $h) }}</span></div>
+                  <div class="ssub" style="color:var(--color-primary);">{{ $d := .JSON.String "linux_distro" }}<span class="preal">{{ $d }}</span><span class="pfake">{{ replaceMatches "[0-9]" "0" (replaceMatches "[A-Za-z]" "x" $d) }}</span></div>
+                  <div class="ssub">{{ $k := .JSON.String "os_version" }}<span class="preal">{{ $k }}</span><span class="pfake">{{ replaceMatches "[0-9]" "0" (replaceMatches "[A-Za-z]" "x" $k) }}</span></div>
+                  <div class="ssub" style="color:var(--color-primary);">up {{ (.Subrequest "uptime").JSON.String "@this" }}</div>
+                </div>
+                <div class="stile">
+                  {{ $pub := (getResponse (newRequest "https://api.ipify.org/?format=json")).JSON.String "ip" }}
+                  <div class="slabel">IP Address</div>
+                  <div class="flex justify-between ssub">
+                    <span>public</span>
+                    <span style="color:var(--color-primary);"><span class="preal">{{ if $pub }}{{ $pub }}{{ else }}&mdash;{{ end }}</span><span class="pfake">{{ replaceMatches "[0-9]" "0" $pub }}</span></span>
+                  </div>
+                  <div class="flex justify-between ssub">
+                    <span>private</span>
+                    {{ $priv := printf "%s/%d" ((.Subrequest "ip").JSON.String "address") ((.Subrequest "ip").JSON.Int "mask_cidr") }}<span style="color:var(--color-text-highlight);"><span class="preal">{{ $priv }}</span><span class="pfake">{{ replaceMatches "[0-9]" "0" $priv }}</span></span>
+                  </div>
+                  <div class="slabel" style="margin-top:10px;">DNS</div>
+                  {{ range (.Subrequest "dns").JSON.Array "" }}
+                  <div class="flex justify-between ssub">
+                    <span>{{ .String "description" }}</span>
+                    <span style="color:var(--color-text-highlight);">{{ mul (.Float "status") 1000 | printf "%.1f" }} ms</span>
+                  </div>
+                  {{ end }}
+                </div>
+              </div>
+
+          - type: custom-api
+            title: Resources
+            frameless: true
+            cache: 1m
+            url: http://${GLANCES_HOST}/api/4/cpu
+            subrequests:
+              load:
+                url: http://${GLANCES_HOST}/api/4/load
+              mem:
+                url: http://${GLANCES_HOST}/api/4/mem
+              net:
+                url: http://${GLANCES_HOST}/api/4/network/interface_name/value/${NET_INTERFACE}
+              fs:
+                url: http://${GLANCES_HOST}/api/4/fs
+              cpuh:
+                url: http://${GLANCES_HOST}/api/4/cpu/user/history/120
+              loadh:
+                url: http://${GLANCES_HOST}/api/4/load/min1/history/120
+              memh:
+                url: http://${GLANCES_HOST}/api/4/mem/percent/history/120
+              neth:
+                url: http://${GLANCES_HOST}/api/4/network/history/120
+              diskio:
+                url: http://${GLANCES_HOST}/api/4/diskio
+            template: |
+              {{ $l := (.Subrequest "load").JSON }}
+              {{ $m := (.Subrequest "mem").JSON }}
+              {{ $dio := (.Subrequest "diskio").JSON }}
+              <div class="srow srow5">
+                <div class="stile">
+                  <div class="slabel">CPU</div>
+                  <div class="sval">{{ .JSON.Float "total" | printf "%.1f" }}%</div>
+                  <div class="ssub">{{ .JSON.Int "cpucore" }} cores</div>
+                  <div class="ssub">{{ .JSON.Float "iowait" | printf "%.1f" }}% iowait</div>
+                  {{ $cv := list }}{{ range $p := (.Subrequest "cpuh").JSON.Array "" }}{{ $cv = append $cv ($p.Float "1") }}{{ end }}
+                  {{ $cn := len $cv }}
+                  {{ $cpk := 0.0 }}{{ $csm := 0.0 }}{{ $cct := 0.0 }}{{ range $v := $cv }}{{ if gt $v $cpk }}{{ $cpk = $v }}{{ end }}{{ $csm = sub $csm (mul $v -1.0) }}{{ $cct = sub $cct -1.0 }}{{ end }}
+                  {{ if gt $cn 1 }}<div class="sgfoot">{{ $cp := "" }}{{ range $i, $v := $cv }}{{ $cp = printf "%s %d,%.1f" $cp $i (sub 100.0 $v) }}{{ end }}
+                  <svg class="spark" viewBox="0 0 {{ sub $cn 1 }} 100" preserveAspectRatio="none">
+                  <polygon class="sparkf" points="0,100{{ $cp }} {{ sub $cn 1 }},100"/>
+                  <polyline class="sparkl" points="{{ $cp }}"/>
+                  </svg>
+                  <div class="sparkk"><i><b>avg</b> {{ div $csm $cct | printf "%.1f" }}</i><i><b>pk</b> {{ printf "%.1f" $cpk }}%</i></div>
+                  </div>{{ else }}<div class="sgfoot"><div class="sparkna">collecting&hellip;</div></div>{{ end }}
+                </div>
+                <div class="stile">
+                  <div class="slabel">Load Avg</div>
+                  <div class="sval">{{ $l.Float "min1" | printf "%.2f" }}</div>
+                  <div class="ssub">{{ $l.Float "min5" | printf "%.2f" }} (5m)</div>
+                  <div class="ssub">{{ $l.Float "min15" | printf "%.2f" }} (15m)</div>
+                  {{ $lv := list }}{{ range $p := (.Subrequest "loadh").JSON.Array "" }}{{ $lv = append $lv ($p.Float "1") }}{{ end }}
+                  {{ $ln := len $lv }}{{ $cores := .JSON.Float "cpucore" }}{{ if le $cores 0.0 }}{{ $cores = 1.0 }}{{ end }}
+                  {{ $lpk := 0.0 }}{{ $lsm := 0.0 }}{{ $lct := 0.0 }}{{ range $v := $lv }}{{ if gt $v $lpk }}{{ $lpk = $v }}{{ end }}{{ $lsm = sub $lsm (mul $v -1.0) }}{{ $lct = sub $lct -1.0 }}{{ end }}
+                  {{ if gt $ln 1 }}<div class="sgfoot">{{ $lp := "" }}{{ range $i, $v := $lv }}{{ $y := sub 100.0 (mul (div $v $cores) 100.0) }}{{ if lt $y 0.0 }}{{ $y = 0.0 }}{{ end }}{{ $lp = printf "%s %d,%.1f" $lp $i $y }}{{ end }}
+                  <svg class="spark" viewBox="0 0 {{ sub $ln 1 }} 100" preserveAspectRatio="none">
+                  <polygon class="sparkf" points="0,100{{ $lp }} {{ sub $ln 1 }},100"/>
+                  <polyline class="sparkl" points="{{ $lp }}"/>
+                  </svg>
+                  <div class="sparkk"><i><b>avg</b> {{ div $lsm $lct | printf "%.2f" }}</i><i><b>pk</b> {{ printf "%.2f" $lpk }}</i></div>
+                  </div>{{ else }}<div class="sgfoot"><div class="sparkna">collecting&hellip;</div></div>{{ end }}
+                </div>
+                <div class="stile">
+                  <div class="slabel">Memory</div>
+                  <div class="sval">{{ $m.Float "percent" | printf "%.1f" }}%</div>
+                  <div class="ssub">{{ div ($m.Float "used") 1073741824 | printf "%.1f" }} / {{ div ($m.Float "total") 1073741824 | printf "%.1f" }} GB</div>
+                  <div class="ssub">{{ div ($m.Float "available") 1073741824 | printf "%.1f" }} GB free</div>
+                  {{ $mv := list }}{{ range $p := (.Subrequest "memh").JSON.Array "" }}{{ $mv = append $mv ($p.Float "1") }}{{ end }}
+                  {{ $mn := len $mv }}
+                  {{ $mpk := 0.0 }}{{ $msm := 0.0 }}{{ $mct := 0.0 }}{{ range $v := $mv }}{{ if gt $v $mpk }}{{ $mpk = $v }}{{ end }}{{ $msm = sub $msm (mul $v -1.0) }}{{ $mct = sub $mct -1.0 }}{{ end }}
+                  {{ if gt $mn 1 }}<div class="sgfoot">{{ $mp := "" }}{{ range $i, $v := $mv }}{{ $mp = printf "%s %d,%.1f" $mp $i (sub 100.0 $v) }}{{ end }}
+                  <svg class="spark" viewBox="0 0 {{ sub $mn 1 }} 100" preserveAspectRatio="none">
+                  <polygon class="sparkf" points="0,100{{ $mp }} {{ sub $mn 1 }},100"/>
+                  <polyline class="sparkl" points="{{ $mp }}"/>
+                  </svg>
+                  <div class="sparkk"><i><b>avg</b> {{ div $msm $mct | printf "%.1f" }}</i><i><b>pk</b> {{ printf "%.1f" $mpk }}%</i></div>
+                  </div>{{ else }}<div class="sgfoot"><div class="sparkna">collecting&hellip;</div></div>{{ end }}
+                </div>
+                <div class="stile">
+                  <div class="slabel">Disk</div>
+                  {{ range (.Subrequest "fs").JSON.Array "" }}{{ if eq (.String "mnt_point") "${ROOT_MOUNT}" }}
+                  <div class="sval">{{ .Float "percent" | printf "%.1f" }}%</div>
+                  <div class="ssub">{{ div (.Float "used") 1000000000 | printf "%.0f" }} / {{ div (.Float "size") 1000000000 | printf "%.0f" }} GB</div>
+                  <div class="ssub">{{ div (.Float "free") 1000000000 | printf "%.0f" }} GB free</div>
+                  <div class="sgfoot">
+                    <div class="sbarwrap"><div class="sbar"><div class="sbarf" style="width:{{ .Float "percent" | printf "%.1f" }}%;"></div></div></div>
+                    <div class="sparkk">{{ range $dio.Array "" }}{{ if eq (.String "disk_name") "${DISK_NAME}" }}<i><b>r</b> {{ div (.Float "read_bytes_rate_per_sec") 1024 | printf "%.0f" }}</i><i><b>w</b> {{ div (.Float "write_bytes_rate_per_sec") 1024 | printf "%.0f" }} KB/s</i>{{ end }}{{ end }}</div>
+                  </div>
+                  {{ end }}{{ end }}
+                </div>
+                <div class="stile swide">
+                  <div class="slabel">Network</div>
+                  {{ range (.Subrequest "net").JSON.Array "${NET_INTERFACE}" }}
+                  <div class="sval"><span style="white-space:nowrap;">&darr; {{ div (.Float "bytes_recv_rate_per_sec") 1024 | printf "%.1f" }}</span> <span style="color:var(--color-text-subdue);">/</span> <span style="white-space:nowrap;">&uarr; {{ div (.Float "bytes_sent_rate_per_sec") 1024 | printf "%.1f" }}</span></div>
+                  <div class="ssub">KB/s · ${NET_INTERFACE}</div>
+                  <div class="ssub">&darr; {{ div (.Float "bytes_recv_gauge") 1000000000 | printf "%.0f" }} / &uarr; {{ div (.Float "bytes_sent_gauge") 1000000000 | printf "%.0f" }} GB total</div>
+                  {{ end }}
+                  {{ $rx := list }}{{ range $p := (.Subrequest "neth").JSON.Array "${NET_INTERFACE}_bytes_recv_rate_per_sec" }}{{ $rx = append $rx ($p.Float "1") }}{{ end }}
+                  {{ $tx := list }}{{ range $p := (.Subrequest "neth").JSON.Array "${NET_INTERFACE}_bytes_sent_rate_per_sec" }}{{ $tx = append $tx ($p.Float "1") }}{{ end }}
+                  {{ $nn := len $rx }}{{ if gt (len $tx) $nn }}{{ $nn = len $tx }}{{ end }}
+                  {{ $nx := 0.0 }}{{ range $v := $rx }}{{ if gt $v $nx }}{{ $nx = $v }}{{ end }}{{ end }}{{ range $v := $tx }}{{ if gt $v $nx }}{{ $nx = $v }}{{ end }}{{ end }}{{ if le $nx 0.0 }}{{ $nx = 1.0 }}{{ end }}
+                  {{ if gt $nn 1 }}<div class="sgfoot">{{ $rp := "" }}{{ range $i, $v := $rx }}{{ $rp = printf "%s %d,%.1f" $rp $i (sub 100.0 (mul (div $v $nx) 100.0)) }}{{ end }}
+                  {{ $tp := "" }}{{ range $i, $v := $tx }}{{ $tp = printf "%s %d,%.1f" $tp $i (sub 100.0 (mul (div $v $nx) 100.0)) }}{{ end }}
+                  <svg class="spark" viewBox="0 0 {{ sub $nn 1 }} 100" preserveAspectRatio="none">
+                    <polygon class="sparkf" points="0,100{{ $rp }} {{ sub $nn 1 }},100"/>
+                    <polygon class="sparkf2" points="0,100{{ $tp }} {{ sub $nn 1 }},100"/>
+                    <polyline class="sparkl" points="{{ $rp }}"/>
+                    <polyline class="sparkl2" points="{{ $tp }}"/>
+                  </svg>
+                  <div class="sparkk"><i class="rx">&darr; down</i><i class="tx">&uarr; up</i><i><b>peak</b> {{ div $nx 1024 | printf "%.0f" }} KB/s</i></div>
+                  </div>{{ else }}<div class="sgfoot"><div class="sparkna">collecting&hellip;</div></div>{{ end }}
+                </div>
+              </div>
+
+          - type: custom-api
+            title: Top Consumers
+            frameless: true
+            cache: 2m
+            url: http://${GLANCES_HOST}/api/4/containers
+            subrequests:
+              folders:
+                url: http://${GLANCES_HOST}/api/4/folders
+            template: |
+              {{ $c := .JSON.Array "" }}
+              <div class="srow srow3">
+                <div class="stile">
+                  <div class="slabel">Top CPU</div>
+                  {{ range $i, $v := sortByFloat "cpu_percent" "desc" $c }}{{ if lt $i 5 }}
+                  <div class="flex justify-between tcrow">
+                    <span class="text-truncate">{{ $v.String "name" }}</span>
+                    <span style="color:var(--color-text-highlight);white-space:nowrap;">{{ $v.Float "cpu_percent" | printf "%.1f" }}%</span>
+                  </div>
+                  {{ end }}{{ end }}
+                </div>
+                <div class="stile">
+                  <div class="slabel">Top RAM</div>
+                  {{ range $i, $v := sortByFloat "memory_usage" "desc" $c }}{{ if lt $i 5 }}
+                  <div class="flex justify-between tcrow">
+                    <span class="text-truncate">{{ $v.String "name" }}</span>
+                    <span style="color:var(--color-text-highlight);white-space:nowrap;">{{ div ($v.Float "memory_usage") 1048576 | printf "%.0f" }} MB</span>
+                  </div>
+                  {{ end }}{{ end }}
+                </div>
+                <div class="stile">
+                  <div class="slabel">Top Disk Space</div>
+                  {{ range $i, $v := sortByFloat "size" "desc" ((.Subrequest "folders").JSON.Array "") }}{{ if lt $i 5 }}{{ if eq ($v.Int "errno") 0 }}
+                  <div class="flex justify-between tcrow">
+                    <span class="text-truncate">{{ replaceMatches "^.*/" "" ($v.String "path") }}</span>
+                    <span style="color:var(--color-text-highlight);white-space:nowrap;">{{ div ($v.Float "size") 1000000000 | printf "%.1f" }} GB</span>
+                  </div>
+                  {{ end }}{{ end }}{{ end }}
+                </div>
+              </div>
+
+          - type: monitor
+            title: Services
+            cache: 1m
+            # A stopped container probes as ERROR in ~6ms: Go resolves the absent
+            # name to NXDOMAIN at once, so down services cost nothing to list.
+            sites:
+              # YOUR services go here, one block each, add as many as you like.
+              # check-url is probed over the shared docker network (container
+              # name, internal port); url is what the tile opens. Icons are
+              # si:<simpleicons-slug> or mdi:<material-design-icon>.
+              - title: Jellyfin
+                url: https://jellyfin.${PUBLIC_DOMAIN}
+                check-url: http://jellyfin:8096/health
+                icon: si:jellyfin
+              - title: Example Service
+                url: https://example-service.${PUBLIC_DOMAIN}
+                check-url: http://example-service:8080/
+                icon: mdi:application
+              - title: Another Service
+                url: https://another-service.${PUBLIC_DOMAIN}
+                check-url: http://another-service:3000/
+                icon: mdi:server
+
+          - type: custom-api
+            title: Docker
+            frameless: true
+            cache: 1m
+            url: http://socket-proxy:2375/v1.24/containers/json?all=true
+            subrequests:
+              wud:
+                url: http://wud:3000/api/containers
+            template: |
+              {{ $all := sortByString "Names.0" "asc" (.JSON.Array "") }}
+              {{ $wud := (.Subrequest "wud").JSON.Array "" }}
+              {{ $projects := list }}
+              {{ range $c := $all }}{{ $p := $c.String `Labels.com\.docker\.compose\.project` }}{{ if ne $p "" }}{{ $projects = append $projects $p }}{{ end }}{{ end }}
+              {{ $projects = sortAlpha (uniq $projects) }}
+              <div class="drow">
+              {{ range $proj := $projects }}
+                {{ $tot := 0 }}{{ $up := 0 }}
+                {{ range $c := $all }}{{ if eq ($c.String `Labels.com\.docker\.compose\.project`) $proj }}{{ $tot = add $tot 1 }}{{ if eq ($c.String "State") "running" }}{{ $up = add $up 1 }}{{ end }}{{ end }}{{ end }}
+                <div class="stile">
+                  <div class="dhead">
+                    <div class="slabel" style="margin-bottom:0;"><a href="${DOCKER_UI_URL}" target="_blank" rel="noreferrer" title="Open in your Docker UI">{{ $proj }}</a></div>
+                    <div class="dcount{{ if ne $up $tot }} bad{{ end }}">{{ $up }}/{{ $tot }}</div>
+                  </div>
+                  {{ range $c := $all }}{{ if eq ($c.String `Labels.com\.docker\.compose\.project`) $proj }}
+                  {{ $st := $c.String "Status" }}
+                  {{ $health := findMatch "unhealthy|healthy|health: starting" $st }}
+                  <div class="dc">
+                    <div class="dc1">
+                      <span class="ddot{{ if ne ($c.String "State") "running" }} bad{{ else if eq $health "unhealthy" }} bad{{ else if eq $health "health: starting" }} warn{{ end }}"></span>
+                      {{ $cn := trimPrefix "/" ($c.String "Names.0") }}
+                      <span class="dcn text-truncate">{{ $cn }}</span>
+                      {{ range $w := $wud }}{{ if and (eq ($w.String "name") $cn) ($w.Bool "updateAvailable") }}<span class="dupd" title="{{ $w.String "image.tag.value" }} &rarr; {{ $w.String "result.tag" }}">upd</span>{{ end }}{{ end }}
+                      <span class="dup">{{ if eq ($c.String "State") "running" }}{{ replaceMatches ` \(.*\)$` "" (trimPrefix "Up " $st) }}{{ else }}{{ $c.String "State" }}{{ end }}</span>
+                    </div>
+                    <div class="dc2">
+                      {{ $img := replaceMatches "^.*/" "" ($c.String "Image") }}<span class="dimg" title="{{ $c.String "Image" }}">{{ $img }}</span>
+                      {{ $pub := list }}{{ $min := 0 }}
+                      {{ range $c.Array "Ports" }}{{ if gt (.Int "PublicPort") 0 }}{{ $pub = append $pub (.Int "PublicPort") }}{{ else }}{{ $pp := .Int "PrivatePort" }}{{ if or (eq $min 0) (lt $pp $min) }}{{ $min = $pp }}{{ end }}{{ end }}{{ end }}
+                      {{ if $pub }}<span class="dport">{{ range $i, $v := sortAlpha (uniq $pub) }}{{ if $i }} {{ end }}:{{ $v }}{{ end }}</span>
+                      {{ else if $min }}<span class="dport" style="color:var(--color-text-subdue);">{{ $min }}</span>{{ end }}
+                    </div>
+                  </div>
+                  {{ end }}{{ end }}
+                </div>
+              {{ end }}
+              </div>
+
+      - size: small
+        widgets:
+          - type: clock
+            hour-format: 12h
+
+          - type: weather
+            location: "${WEATHER_LOCATION}"
+            units: imperial
+            hour-format: 12h
+
+          - type: custom-api
+            title: Jellyfin · Continue Watching
+            cache: 2m
+            url: http://jellyfin:8096/UserItems/Resume?userId=${JELLYFIN_USER_ID}&Limit=4&Fields=UserData,RunTimeTicks,SeriesName,ProductionYear,Overview,IndexNumber,ParentIndexNumber&MediaTypes=Video
+            headers:
+              Authorization: 'MediaBrowser Token="${JELLYFIN_API_KEY}"'
+              Accept: application/json
+            template: |
+              {{ $items := .JSON.Array "Items" }}
+              {{ if not $items }}{{ hide }}{{ end }}
+              <style>
+              .cw{display:flex;gap:10px;align-items:center;}
+              .cw + .cw{margin-top:11px;padding-top:11px;border-top:1px solid var(--color-widget-content-border);}
+              .cwthumb{width:86px;flex-shrink:0;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:block;}
+              .cwbody{min-width:0;flex:1;}
+              .cwbar{height:4px;border-radius:2px;background:var(--color-widget-content-border);margin-top:6px;overflow:hidden;}
+              .cwfill{height:100%;background:var(--color-primary);border-radius:2px;}
+              .cwmeta{display:flex;justify-content:space-between;gap:8px;margin-top:4px;
+                      font-size:var(--font-size-h6);color:var(--color-text-subdue);}
+              .cwyear{color:var(--color-text-subdue);font-weight:normal;}
+              .cwsub{font-size:var(--font-size-h6);color:var(--color-primary);margin-top:1px;}
+              .cwov{font-size:var(--font-size-h6);color:var(--color-text-subdue);margin-top:3px;
+                    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+              </style>
+              {{ range $items }}
+              {{ $id := .String "Id" }}
+              {{ $tag := .String "ImageTags.Primary" }}
+              {{ $run := .Float "RunTimeTicks" }}
+              {{ $pos := .Float "UserData.PlaybackPositionTicks" }}
+              {{ $pct := 0.0 }}{{ if gt $run 0.0 }}{{ $pct = mul (div $pos $run) 100 }}{{ end }}
+              <a class="cw" href="https://jellyfin.${PUBLIC_DOMAIN}/web/#/details?id={{ $id }}" target="_blank" style="text-decoration:none;">
+                <img class="cwthumb pblur" src="https://jellyfin.${PUBLIC_DOMAIN}/Items/{{ $id }}/Images/Primary?maxWidth=200{{ if $tag }}&tag={{ $tag }}{{ end }}" loading="lazy" alt="">
+                <div class="cwbody">
+                  {{ $series := .String "SeriesName" }}{{ $name := .String "Name" }}
+                  {{ $year := .Int "ProductionYear" }}{{ $sn := .Int "ParentIndexNumber" }}{{ $ep := .Int "IndexNumber" }}
+                  {{ $ov := .String "Overview" }}
+                  <div class="size-h6 color-highlight text-truncate pblur">{{ if $series }}{{ $series }}{{ else }}{{ $name }}{{ end }}{{ if $year }} <span class="cwyear">({{ $year }})</span>{{ end }}</div>
+                  {{ if $series }}<div class="cwsub text-truncate pblur">{{ if $ep }}S{{ printf "%02d" $sn }}E{{ printf "%02d" $ep }} &middot; {{ end }}{{ $name }}</div>{{ end }}
+                  <div class="cwbar"><div class="cwfill" style="width:{{ printf "%.0f" $pct }}%;"></div></div>
+                  <div class="cwmeta">
+                    <span style="color:var(--color-primary);">{{ printf "%.0f" $pct }}%</span>
+                    {{ $left := div (sub $run $pos) 600000000 }}<span>{{ if lt $left 1.0 }}&lt;1{{ else }}{{ printf "%.0f" $left }}{{ end }} min left</span>
+                  </div>
+                  {{ if and $ov (not (findMatch "^Downloaded with" $ov)) }}<div class="cwov pblur">{{ $ov }}</div>{{ end }}
+                </div>
+              </a>
+              {{ end }}
+
+          - type: custom-api
+            title: Jellyfin · Recently Added
+            cache: 15m
+            url: http://jellyfin:8096/Users/${JELLYFIN_USER_ID}/Items/Latest?Limit=6&Fields=DateCreated
+            headers:
+              Authorization: 'MediaBrowser Token="${JELLYFIN_API_KEY}"'
+              Accept: application/json
+            template: |
+              <div class="pblur" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+              {{ range .JSON.Array "" }}
+                {{ $id := .String "Id" }}
+                {{ $tag := .String "ImageTags.Primary" }}
+                <a href="https://jellyfin.${PUBLIC_DOMAIN}/web/#/details?id={{ $id }}" target="_blank" style="display:block;text-decoration:none;min-width:0;">
+                  <img src="https://jellyfin.${PUBLIC_DOMAIN}/Items/{{ $id }}/Images/Primary?maxWidth=280{{ if $tag }}&tag={{ $tag }}{{ end }}" loading="lazy" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:block;">
+                  <div class="size-h6 color-highlight text-truncate" style="margin-top:4px;">{{ .String "Name" }}</div>
+                </a>
+              {{ end }}
+              </div>

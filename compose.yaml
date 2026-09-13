@@ -1,0 +1,30 @@
+services:
+  dynacat:
+    image: panonim/dynacat:2.4.0
+    container_name: dynacat
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/app/config
+      - ./assets:/app/assets
+    env_file:
+      - .env
+    networks:
+      - dynacat
+      # The Docker and Releases widgets read the Docker API through a
+      # socket-proxy container. Join its network and drop the `ports:` above
+      # if you put dynacat behind a reverse proxy instead.
+      # - socket-proxy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+networks:
+  dynacat:
+    name: dynacat
+  # socket-proxy:
+  #   external: true
