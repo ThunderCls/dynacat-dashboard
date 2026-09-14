@@ -1,6 +1,6 @@
 services:
   dynacat:
-    image: panonim/dynacat:2.4.0
+    image: panonim/dynacat:3.0.0
     container_name: dynacat
     restart: unless-stopped
     ports:
