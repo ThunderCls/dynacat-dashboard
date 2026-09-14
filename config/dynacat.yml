@@ -137,6 +137,8 @@ pages:
             subrequests:
               wud:
                 url: http://wud:3000/api/containers
+                headers:
+                  Authorization: Basic ${WUD_BASIC_AUTH}
             template: |
               {{/* Four parallel lists - one entry per service, same order in each.
                    $svc  = container name, $repo = GitHub owner/repo,
@@ -451,6 +453,8 @@ pages:
             subrequests:
               wud:
                 url: http://wud:3000/api/containers
+                headers:
+                  Authorization: Basic ${WUD_BASIC_AUTH}
             template: |
               {{ $all := sortByString "Names.0" "asc" (.JSON.Array "") }}
               {{ $wud := (.Subrequest "wud").JSON.Array "" }}
