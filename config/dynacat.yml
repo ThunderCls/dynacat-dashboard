@@ -425,6 +425,7 @@ pages:
           - type: monitor
             title: Services
             cache: 1m
+            show-history: true
             # A stopped container probes as ERROR in ~6ms: Go resolves the absent
             # name to NXDOMAIN at once, so down services cost nothing to list.
             sites:
